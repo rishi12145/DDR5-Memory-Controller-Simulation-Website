@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR5 Memory Controller - Verilog Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-2xl font-bold">DDR5 Controller</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-white hover:text-yellow-300">Home</a>
+                <a href="verilog.html" class="text-white hover:text-yellow-300">Verilog Code</a>
+                <a href="simulation.html" class="text-white hover:text-yellow-300">Simulation</a>
+                <a href="how-it-works.html" class="text-white hover:text-yellow-300">How It Works</a>
+                <a href="team.html" class="text-white hover:text-yellow-300">Team Members</a>
+                <button id="theme-toggle" class="text-white hover:text-yellow-300">Toggle Theme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Verilog Code</h1>
+        <p class="mb-4 text-gray-200 drop-shadow-md">
+            Below is the Verilog code for the DDR5 Memory Controller, implementing the state machine, command generation, and data path logic.
+        </p>
+        <pre><code class="language-verilog">`timescale 1ns / 1ps
+
+module ddr5_controller (
+    input wire clk,           // System clock
+    input wire rst_n,         // Active-low reset
+    input wire req,           // Request signal
+    input wire wr_rd,         // Write (1) or Read (0)
+    input wire [31:0] addr,   // Memory address
+    input wire [63:0] data_in,// Write data
+    output reg [63:0] data_out,// Read data
+    output reg ack,           // Acknowledge
+    output reg ready,         // Controller ready
+    // DDR5 Interface
+    output reg CK_t, CK_c,    // Differential clock
+    output reg CS_n,          // Chip select
+    output reg [13:0] CA,     // Command/address bus
+    inout wire [63:0] DQ,     // Data lines
+    inout wire [7:0] DQS      // Data strobe
+);
+
+    // DDR5 Timing Parameters
+    parameter tRCD = 10; // Row-to-column delay (cycles)
+    parameter tCL  = 8;  // CAS latency (cycles)
+    parameter tRP  = 10; // Precharge time (cycles)
+    parameter tWR  = 12; // Write recovery time (cycles)
+
+    // State Machine States
+    typedef enum {
+        IDLE,
+        ACTIVATE,
+        READ,
+        WRITE,
+        PRECHARGE
+    } state_t;
+    state_t state, next_state;
+
+    // Internal signals
+    reg [15:0] row_addr;
+    reg [9:0] col_addr;
+    reg [2:0] bank_addr;
+    reg [1:0] bank_group;
+
+    // State Machine
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            state <= IDLE;
+        else
+            state <= next_state;
+    end
+
+    always @(*) begin
+        next_state = state;
+        ready = 0;
+        ack = 0;
+        case (state)
+            IDLE: begin
+                ready = 1;
+                if (req) begin
+                    next_state = ACTIVATE;
+                end
+            end
+            ACTIVATE: begin
+                if (timer == tRCD)
+                    next_state = wr_rd ? WRITE : READ;
+            end
+            READ: begin
+                if (timer == tCL) begin
+                    ack = 1;
+                    next_state = PRECHARGE;
+                end
+            end
+            WRITE: begin
+                if (timer == tWR) begin
+                    ack = 1;
+                    next_state = PRECHARGE;
+                end
+            end
+            PRECHARGE: begin
+                if (timer == tRP)
+                    next_state = IDLE;
+            end
+        endcase
+    end
+
+    // Command Generation
+    always @(posedge clk) begin
+        case (state)
+            ACTIVATE: begin
+                CS_n <= 0;
+                CA <= {1'b1, row_addr}; // ACTIVATE command
+            end
+            READ: begin
+                CS_n <= 0;
+                CA <= {1'b0, col_addr}; // READ command
+            end
+            WRITE: begin
+                CS_n <= 0;
+                CA <= {1'b0, col_addr}; // WRITE command
+            end
+            PRECHARGE: begin
+                CS_n <= 0;
+                CA <= {1'b1, 10'h0}; // PRECHARGE command
+            end
+            default: begin
+                CS_n <= 1;
+                CA <= 0;
+            end
+        endcase
+    end
+
+    // Data Path
+    reg [63:0] dq_out;
+    reg dq_oe;
+    assign DQ = dq_oe ? dq_out : 'z;
+
+    always @(posedge clk) begin
+        if (state == WRITE) begin
+            dq_oe <= 1;
+            dq_out <= data_in;
+        end else if (state == READ) begin
+            dq_oe <= 0;
+            data_out <= DQ;
+        end else begin
+            dq_oe <= 0;
+        end
+    end
+
+    // Timing Management
+    reg [31:0] timer;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            timer <= 0;
+        else if (state != IDLE)
+            timer <= timer + 1;
+        else
+            timer <= 0;
+    end
+endmodule
+</code></pre>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-verilog.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR5 Memory Controller - How It Works</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-2xl font-bold">DDR5 Controller</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-white hover:text-yellow-300">Home</a>
+                <a href="verilog.html" class="text-white hover:text-yellow-300">Verilog Code</a>
+                <a href="simulation.html" class="text-white hover:text-yellow-300">Simulation</a>
+                <a href="how-it-works.html" class="text-white hover:text-yellow-300">How It Works</a>
+                <a href="team.html" class="text-white hover:text-yellow-300">Team Members</a>
+                <button id="theme-toggle" class="text-white hover:text-yellow-300">Toggle Theme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">How It Works</h1>
+        <p class="mb-4 text-gray-200 drop-shadow-md">
+            The DDR5 Memory Controller manages data transfers between a processor and DDR5 SDRAM. Here’s a detailed explanation of its operation.
+        </p>
+
+        <!-- DDR5 Overview -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">DDR5 Overview</h2>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                DDR5 (Double Data Rate 5) is the latest SDRAM standard, offering data rates up to 8400 MT/s, dual 32-bit channels, and on-die ECC for reliability.
+            </p>
+            <img src="images/timing-example.png" alt="DDR5 Timing Diagram" class="mx-auto rounded-lg shadow-lg mb-4 w-full max-w-lg" onerror="this.style.display='none';">
+        </section>
+
+        <!-- Controller Operation -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">Controller Operation</h2>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                The controller operates in the following states:
+            </p>
+            <ul class="list-disc pl-6 mb-4 text-gray-200 drop-shadow-md">
+                <li><strong>IDLE</strong>: Waits for a read or write request.</li>
+                <li><strong>ACTIVATE</strong>: Opens a memory row (tRCD = 5 cycles).</li>
+                <li><strong>READ</strong>: Reads data from the active row (tCL = 5 cycles).</li>
+                <li><strong>WRITE</strong>: Writes data to the active row (tWR = 6 cycles).</li>
+                <li><strong>PRECHARGE</strong>: Closes the row (tRP = 5 cycles).</li>
+            </ul>
+            <img src="images/state-diagram.png" alt="State Machine Diagram" class="mx-auto rounded-lg shadow-lg mb-4 w-full max-w-lg" onerror="this.style.display='none';">
+        </section>
+
+        <!-- Generation Operation -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">Generalization Operation</h2>
+            <ul class="list-disc pl-6 mb-4 text-gray-200 drop-shadow-md">
+                <li><strong>Input Address</strong>: User provides hexadecimal address (e.g., 1000), parsed to binary.</li>
+                <li><strong>Address Mapping</strong>: Decomposed into bank_group, bank, row, and column (e.g., tRCD = 5 cycles to activate row).</li>
+                <li><strong>Command Generation</strong>: Controller issues ACTIVATE (tRCD = 5 cycles), READ/WRITE (tCL = 5, tWR = 6 cycles), PRECHARGE (tRP = 5 cycles).</li>
+                <li><strong>Data Transfer</strong>: Data moves via DQ lines, synchronized by DQS (strobe active during tCL/tWR).</li>
+                <li><strong>Output</strong>: Data returned or stored, acknowledged with completion signal.</li>
+                <li><strong>Cycle Summary</strong>: tRCD (5), tCL (5), tWR (6), tRP (5) ensure timing compliance.</li>
+            </ul>
+        </section>
+
+        <!-- Write Operation -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">Write Operation</h2>
+            <ul class="list-disc pl-6 mb-4 text-gray-200 drop-shadow-md">
+                <li><strong>Step 1: Idle State</strong> - Controller waits (select_chip = 1).</li>
+                <li><strong>Step 2: Start Request</strong> - User inputs address (e.g., 1000) and data (e.g., DEADBEEF), triggering ACTIVATE (tRCD = 5 cycles).</li>
+                <li><strong>Step 3: Address Mapping</strong> - Decomposes address into bank_group, bank, row, column.</li>
+                <li><strong>Step 4: Write Command</strong> - Issues WRITE command, select_chip = 0, data_sink = 'S'.</li>
+                <li><strong>Step 5: Data Write</strong> - Transfers data via data_bus (tWR = 6 cycles), stores in memory.</li>
+                <li><strong>Step 6: Precharge</strong> - Prepares for next operation (tRP = 5 cycles), select_chip = 0, then returns to IDLE.</li>
+                <li><strong>Completion</strong>: Acknowledged with completion read/write = 1.</li>
+            </ul>
+        </section>
+
+        <!-- Read Operation -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">Read Operation</h2>
+            <ul class="list-disc pl-6 mb-4 text-gray-200 drop-shadow-md">
+                <li><strong>Step 1: Idle State</strong> - Controller waits (select_chip = 1).</li>
+                <li><strong>Step 2: Start Request</strong> - User inputs address (e.g., 1000), triggering ACTIVATE (tRCD = 5 cycles).</li>
+                <li><strong>Step 3: Address Mapping</strong> - Decomposes address into bank_group, bank, row, column.</li>
+                <li><strong>Step 4: Read Command</strong> - Issues READ command, select_chip = 0, data_sink = 'S'.</li>
+                <li><strong>Step 5: Data Read</strong> - Retrieves data via data_bus (tCL = 5 cycles), outputs to user.</li>
+                <li><strong>Step 6: Precharge</strong> - Prepares for next operation (tRP = 5 cycles), select_chip = 0, then returns to IDLE.</li>
+                <li><strong>Completion</strong>: Acknowledged with completion read/write = 1.</li>
+            </ul>
+        </section>
+
+        <!-- Simulation -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">Simulation</h2>
+            <p class="text-gray-200 drop-shadow-md">
+                Visit the <a href="simulation.html" class="text-yellow-300 hover:underline">Simulation</a> page to interact with the controller, stepping through states and viewing signals like CS_n, CA, DQ, and DQS.
+            </p>
+        </section>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

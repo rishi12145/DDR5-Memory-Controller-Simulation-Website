@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR5 Memory Controller - Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-2xl font-bold">DDR5 Controller</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-white hover:text-yellow-300">Home</a>
+                <a href="verilog.html" class="text-white hover:text-yellow-300">Verilog Code</a>
+                <a href="simulation.html" class="text-white hover:text-yellow-300">Simulation</a>
+                <a href="how-it-works.html" class="text-white hover:text-yellow-300">How It Works</a>
+                <a href="team.html" class="text-white hover:text-yellow-300">Team Members</a>
+                <button id="theme-toggle" class="text-white hover:text-yellow-300">Toggle Theme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Simulation Section -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Simulation</h1>
+        <p class="mb-4 text-gray-200 drop-shadow-md">
+            Simulate the DDR5 Memory Controller's operation. Enter an address and data (for writes), select an operation, and step through the states.
+        </p>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="mb-4">
+                <label class="block text-lg font-semibold mb-2 text-gray-900 dark:text-gray-200">Address (hex, e.g., 1000):</label>
+                <input id="addr" type="text" value="1000" class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white">
+            </div>
+            <div class="mb-4">
+                <label class="block text-lg font-semibold mb-2 text-gray-900 dark:text-gray-200">Data (hex, for writes, e.g., DEADBEEF):</label>
+                <input id="data_in" type="text" value="DEADBEEF" class="w-full p-2 border rounded dark:bg-gray-700 dark:text-white">
+            </div>
+            <div class="flex flex-wrap gap-4 mb-4">
+                <button id="reset-btn" class="custom-btn bg-red-500 text-white px-4 py-2 rounded">Reset</button>
+                <button id="memory-reset-btn" class="custom-btn bg-red-500 text-white px-4 py-2 rounded">Memory Reset</button>
+                <button id="write-btn" class="custom-btn text-white px-4 py-2 rounded">Start Write</button>
+                <button id="read-btn" class="custom-btn text-white px-4 py-2 rounded">Start Read</button>
+                <button id="step-btn" class="custom-btn text-white px-4 py-2 rounded">Step</button>
+                <button id="auto-btn" class="custom-btn text-white px-4 py-2 rounded">Auto-Run</button>
+                <button id="export-btn" class="custom-btn text-white px-4 py-2 rounded">Export Log</button>
+            </div>
+            <table class="w-full border-collapse mb-4">
+                <thead>
+                    <tr class="bg-gray-200 dark:bg-gray-700">
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">State</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">Timer</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">select_chip</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">Data bus</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">Data sink</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">output</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">completion read/write</th>
+                        <th class="border p-2 text-gray-900 dark:text-gray-200">Ready</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="status-row" class="bg-white dark:bg-gray-800">
+                        <td class="border p-2">IDLE</td>
+                        <td class="border p-2">0</td>
+                        <td class="border p-2">1</td>
+                        <td class="border p-2">Z</td>
+                        <td class="border p-2">Z</td>
+                        <td class="border p-2">0</td>
+                        <td class="border p-2">0</td>
+                        <td class="border p-2">1</td>
+                    </tr>
+                </tbody>
+            </table>
+            <canvas id="timing-canvas" class="w-full h-64 border rounded mb-4"></canvas>
+            <div id="output" class="bg-gray-100 dark:bg-gray-700 p-4 rounded h-40 overflow-y-auto mb-4"></div>
+            <div id="memory-view" class="bg-gray-100 dark:bg-gray-700 p-4 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Animation Sections -->
+    <div class="container mx-auto p-6 space-y-28">
+        <!-- 1. Controller FSM Simulator -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Controller FSM Simulator</h2>
+            <canvas id="fsm-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-fsm" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-fsm" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 2. Write Memory Operations -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Write Memory Operations</h2>
+            <canvas id="write-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-write" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-write" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 3. Read Memory Operations -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Read Memory Operations</h2>
+            <canvas id="read-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-read" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-read" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 4. Total Time Taken -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Total Time Taken</h2>
+            <canvas id="time-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-time" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-time" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 5. DDR4 vs DDR5 Comparative -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">DDR4 vs DDR5 Comparative</h2>
+            <canvas id="comparative-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-comparative" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-comparative" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 6. Real-world Use Case -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Real-world Use Cases</h2>
+            <canvas id="usecase-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-usecase" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-usecase" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+
+        <!-- 7. Error Correction -->
+        <section class="min-h-screen mb-20">
+            <h2 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Error Correction</h2>
+            <canvas id="ecc-canvas" class="border rounded" width="1000" height="500"></canvas>
+            <div class="mt-6 flex space-x-4">
+                <button id="play-ecc" class="custom-btn text-white px-6 py-3 rounded text-lg">Play</button>
+                <button id="pause-ecc" class="custom-btn text-white px-6 py-3 rounded text-lg">Pause</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/simulation.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

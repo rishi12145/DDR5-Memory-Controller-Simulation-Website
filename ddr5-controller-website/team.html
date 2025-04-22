@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR5 Memory Controller - Team Members</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-2xl font-bold">DDR5 Controller</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-white hover:text-yellow-300">Home</a>
+                <a href="verilog.html" class="text-white hover:text-yellow-300">Verilog Code</a>
+                <a href="simulation.html" class="text-white hover:text-yellow-300">Simulation</a>
+                <a href="how-it-works.html" class="text-white hover:text-yellow-300">How It Works</a>
+                <a href="team.html" class="text-white hover:text-yellow-300">Team Members</a>
+                <button id="theme-toggle" class="text-white hover:text-yellow-300">Toggle Theme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-6 text-white drop-shadow-lg">Team Members</h1>
+        <p class="text-lg text-center mb-8 text-gray-200 drop-shadow-md">
+            Meet the team behind the DDR5 Memory Controller project.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-black bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg text-white h-64 w-64 flex flex-col justify-between">
+                <h3 class="text-xl font-semibold">Namra Kumar Koyani</h3>
+                <p class="text-sm">Institute ID:202311057</p>
+                <p class="mt-2">Contribution: Designed the state machine and timing logic.</p>
+            </div>
+            <div class="bg-black bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg text-white h-64 w-64 flex flex-col justify-between">
+                <h3 class="text-xl font-semibold">Sriya Reddy</h3>
+                <p class="text-sm">Institute ID:202311060</p>
+                <p class="mt-2">Contribution: Implemented the command generation module.</p>
+            </div>
+            <div class="bg-black bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg text-white h-64 w-64 flex flex-col justify-between">
+                <h3 class="text-xl font-semibold">Pradeep kumar Saran</h3>
+                <p class="text-sm">Institute ID: 202311066</p>
+                <p class="mt-2">Contribution: Developed the data path and DQ/DQS handling.</p>
+            </div>
+            <div class="bg-black bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg text-white h-64 w-64 flex flex-col justify-between">
+                <h3 class="text-xl font-semibold">Rishikesh Gopal</h3>
+                <p class="text-sm">Institute ID: 202311072</p>
+                <p class="mt-2">Contribution: Created the simulation interface and visuals.</p>
+            </div>
+            <div class="bg-black bg-opacity-50 backdrop-blur-md p-6 rounded-lg shadow-lg text-white h-64 w-64 flex flex-col justify-between">
+                <h3 class="text-xl font-semibold">Shailendar Singh Mandal </h3>
+                <p class="text-sm">Institute ID: 202311078</p>
+                <p class="mt-2">Contribution: Wrote documentation and tested the controller.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

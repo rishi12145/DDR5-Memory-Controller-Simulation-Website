@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR5 Memory Controller - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="bg-black bg-opacity-50 p-4 backdrop-blur-sm">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-2xl font-bold">DDR5 Controller</a>
+            <div class="space-x-4">
+                <a href="index.html" class="text-white hover:text-yellow-300">Home</a>
+                <a href="verilog.html" class="text-white hover:text-yellow-300">Verilog Code</a>
+                <a href="simulation.html" class="text-white hover:text-yellow-300">Simulation</a>
+                <a href="how-it-works.html" class="text-white hover:text-yellow-300">How It Works</a>
+                <a href="team.html" class="text-white hover:text-yellow-300">Team Members</a>
+                
+                <button id="theme-toggle" class="text-white hover:text-yellow-300">Toggle Theme</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-6 text-white drop-shadow-lg">DDR5 Memory Controller Project</h1>
+        <p class="text-lg text-center mb-8 text-gray-200 drop-shadow-md">
+            A Verilog-based implementation for the Computer Organization and Architecture (COA) project, simulating DDR5 memory operations.
+        </p>
+        <img src="images/ddr5-dimm.jpg" alt="DDR5 DIMM" class="mx-auto rounded-lg shadow-xl mb-8 w-full max-w-md" onerror="this.style.display='none';">
+        <section>
+            <h2 class="text-2xl font-semibold mb-4 text-white drop-shadow-lg">About the Project</h2>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                This project implements a DDR5 Memory Controller using Verilog, designed to manage data transfers between a processor and DDR5 SDRAM. DDR5 offers higher bandwidth, lower power, and advanced features like dual 32-bit channels and on-die ECC.
+            </p>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                The controller is built to handle complex memory operations, including read and write cycles, with precise timing parameters such as tRCD, tCL, tRP, and tWR, ensuring compatibility with DDR5 specifications.
+            </p>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                This initiative is part of a Computer Organization and Architecture (COA) course, aiming to provide hands-on experience with modern memory technologies and hardware description languages.
+            </p>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                The project includes a simulation environment where users can step through states, visualize timing diagrams, and explore the controller’s behavior in real-time.
+            </p>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                Additionally, the website offers detailed Verilog code, an explanation of the controller’s operation, and interactive tools to deepen understanding of DDR5 memory management.
+            </p>
+            <p class="mb-4 text-gray-200 drop-shadow-md">
+                Future enhancements may include support for error correction through on-die ECC and optimization for higher data rates, making it a robust platform for learning and experimentation.
+            </p>
+            <p class="text-gray-200 drop-shadow-md">
+                Explore the website to view the Verilog code, simulate the controller’s operations, and learn how it works.
+            </p>
+        </section>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
