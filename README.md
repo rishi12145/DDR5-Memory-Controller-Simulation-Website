@@ -142,11 +142,9 @@ On the Simulation Page:
 
 | Name                    | ID         |
 |-------------------------|------------|
-| Namra Kumar Koyani      | 202311057  |
-| Sriya Reddy             | 202311060  | 
-| Pradeep Kumar Saran     | 202311066  |
 | **Rishikesh Gopal**     | 202311072  |
-| Shailendar Singh Mandal | 202311078  |
+| Sriya Reddy             | 202311060  | 
+
 
 ---
 
